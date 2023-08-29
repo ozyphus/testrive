@@ -1,0 +1,79 @@
+<html>
+<head>
+    <title>Rive Hello World</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script src="https://unpkg.com/@rive-app/canvas@2.1.0"></script>
+<script>
+    let r;
+    const animationsList = [
+        '5154-10355-joystick-demos-fish.riv',
+        'cuteslider.riv',
+        'fui.riv',
+        '5067-10219-robo-buddy.riv'
+        // ... add more paths
+    ];
+    let currentAnimationIndex = 0;
+
+    function loadRiveAnimation(src) {
+        if (r) {
+            r.cleanup();
+        }
+
+        r = new rive.Rive({
+            src: src,
+            canvas: document.getElementById("canvas"),
+            autoplay: true,
+            stateMachines: "State Machine 1",
+            onLoad: () => {
+                r.resizeDrawingSurfaceToCanvas();
+            },
+        });
+    }
+
+    loadRiveAnimation(animationsList[currentAnimationIndex]);
+
+    const canvasElement = document.getElementById("canvas");
+
+    let lastTap = 0;
+    canvasElement.addEventListener('touchend', function(e) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 500 && tapLength > 0) {
+            currentAnimationIndex = (currentAnimationIndex + 1) % animationsList.length;
+            loadRiveAnimation(animationsList[currentAnimationIndex]);
+        }
+        lastTap = currentTime;
+    });
+
+    canvasElement.addEventListener("dblclick", function() {
+        currentAnimationIndex = (currentAnimationIndex + 1) % animationsList.length;
+        loadRiveAnimation(animationsList[currentAnimationIndex]);
+    });
+
+    window.addEventListener('resize', () => {
+        if (r) {
+            r.resizeDrawingSurfaceToCanvas();
+        }
+    });
+
+</script>
+</body>
+</html>
